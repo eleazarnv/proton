@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% block content %}
+
+{% if request.user.is_authenticated %}
+<div class="card">
+    <form method="post" action="/post/" enctype="multipart/form-data">
+        {% csrf_token %}
+        <textarea name="contenido" placeholder="¿Qué estás pensando?"></textarea>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <label for="imagen" style="cursor:pointer; color:#555; font-size:0.9rem; display:flex; align-items:center; gap:6px;">
+                <i class="fa-solid fa-image" style="font-size:1.1rem;"></i>
+                <span id="file-label">Adjuntar imagen</span>
+            </label>
+            <input type="file" name="imagen" id="imagen" accept="image/*" style="display:none;">
+            <button type="submit">Publicar</button>
+        </div>
+    </form>
+</div>
+
+{% for post in posts %}
+<div class="card">
+    <div class="post-header">
+        {% if post.usuario.perfil.foto %}
+            <img src="{{ post.usuario.perfil.foto.url }}">
+        {% else %}
+            <div class="avatar-placeholder">{{ post.usuario.username|first|upper }}</div>
+        {% endif %}
+        <div>
+            <a href="/perfil/{{ post.usuario.username }}/">{{ post.usuario.username }}</a>
+            <small>{{ post.fecha|date:"d M Y, H:i" }}</small>
+        </div>
+    </div>
+
+    {% if post.contenido %}
+        <p style="margin-bottom:8px;">{{ post.contenido }}</p>
+    {% endif %}
+
+    {% if post.imagen %}
+        <img src="{{ post.imagen.url }}" class="post-img">
+    {% endif %}
+
+    <div class="post-actions">
+        <a href="/like/{{ post.id }}/"><i class="fa-solid fa-heart"></i> {{ post.likes.count }}</a>
+        {% if request.user == post.usuario %}
+            <a href="/eliminar/{{ post.id }}/" class="delete"><i class="fa-solid fa-trash"></i></a>
+        {% endif %}
+    </div>
+
+    <hr>
+
+    {% for comentario in post.comentarios.all %}
+    <div class="comment">
+        <a href="/perfil/{{ comentario.usuario.username }}/">{{ comentario.usuario.username }}</a>: {{ comentario.contenido }}
+        {% if request.user == comentario.usuario %}
+            <a href="/eliminar-comentario/{{ comentario.id }}/" style="color:#555; margin-left:5px;">✕</a>
+        {% endif %}
+    </div>
+    {% endfor %}
+
+    <form method="post" action="/comentar/{{ post.id }}/" style="margin-top:8px; display:flex; gap:8px;">
+        {% csrf_token %}
+        <input type="text" name="contenido" placeholder="Comentar..." style="margin:0;">
+        <button type="submit" style="padding:10px 15px;"><i class="fa-solid fa-paper-plane"></i></button>
+    </form>
+</div>
+{% endfor %}
+
+{% else %}
+
+<div style="min-height:70vh; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;">
+    <h1 style="font-family:'Cormorant Garamond',serif; font-size:3.5rem; letter-spacing:6px; margin-bottom:10px;">PROTON</h1>
+    <p style="color:#444; font-size:0.95rem; margin-bottom:30px; letter-spacing:1px;">Conecta con el mundo.</p>
+    <div style="display:flex; gap:12px;">
+        <a href="/registro/" class="btn">Crear cuenta</a>
+        <a href="/login/" class="btn btn-outline">Iniciar sesión</a>
+    </div>
+</div>
+
+{% endif %}
+
+<script>
+document.getElementById('imagen') && document.getElementById('imagen').addEventListener('change', function() {
+    var label = document.getElementById('file-label');
+    label.textContent = this.files[0] ? this.files[0].name : 'Adjuntar imagen';
+});
+</script>
+
+{% endblock %}

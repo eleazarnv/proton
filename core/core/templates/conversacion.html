@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div style="display:flex; align-items:center; gap:12px; margin-bottom:15px;">
+    <a href="/mensajes/" style="color:#555; font-size:1.1rem;"><i class="fa-solid fa-arrow-left"></i></a>
+    {% if otro.perfil.foto %}
+        <img src="{{ otro.perfil.foto.url }}" style="width:40px; height:40px; border-radius:50%; object-fit:cover; border:2px solid #333;">
+    {% else %}
+        <div style="width:40px; height:40px; border-radius:50%; background:#222; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; border:2px solid #333;">
+            {{ otro.username|first|upper }}
+        </div>
+    {% endif %}
+    <a href="/perfil/{{ otro.username }}/" style="font-weight:600; color:#e0e0e0; text-decoration:none;">{{ otro.username }}</a>
+</div>
+
+<div class="chat-box" id="chatbox">
+    {% for msg in msgs %}
+    <div class="msg-wrap">
+        {% if msg.remitente == request.user %}
+            <div class="msg-bubble msg-me">{{ msg.contenido }}</div>
+            <div class="msg-time msg-time-right">{{ msg.fecha|date:"H:i" }}</div>
+        {% else %}
+            <div class="msg-bubble msg-other">{{ msg.contenido }}</div>
+            <div class="msg-time">{{ msg.fecha|date:"H:i" }}</div>
+        {% endif %}
+    </div>
+    {% empty %}
+        <p style="color:#333; text-align:center; margin-top:20px; font-size:0.9rem;">Inicia la conversación</p>
+    {% endfor %}
+</div>
+
+<form method="post" style="display:flex; gap:8px;">
+    {% csrf_token %}
+    <input type="text" name="contenido" placeholder="Escribe un mensaje..." autocomplete="off" style="margin:0;">
+    <button type="submit" style="padding:10px 16px;"><i class="fa-solid fa-paper-plane"></i></button>
+</form>
+
+<script>
+    var chatbox = document.getElementById('chatbox');
+    chatbox.scrollTop = chatbox.scrollHeight;
+</script>
+
+{% endblock %}

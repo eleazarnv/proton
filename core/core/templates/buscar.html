@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="card">
+    <form method="get" action="/buscar/">
+        <div style="display:flex; gap:8px;">
+            <input type="text" name="q" placeholder="Buscar usuario..." value="{{ query }}" style="margin:0;">
+            <button type="submit" style="padding:10px 16px;"><i class="fa-solid fa-magnifying-glass"></i></button>
+        </div>
+    </form>
+</div>
+
+{% if usuarios %}
+    {% for usuario in usuarios %}
+    <div class="card" style="display:flex; align-items:center; gap:12px;">
+        {% if usuario.perfil.foto %}
+            <img src="{{ usuario.perfil.foto.url }}" style="width:48px; height:48px; border-radius:50%; object-fit:cover; border:2px solid #333;">
+        {% else %}
+            <div style="width:48px; height:48px; border-radius:50%; background:#222; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; border:2px solid #333;">
+                {{ usuario.username|first|upper }}
+            </div>
+        {% endif %}
+        <a href="/perfil/{{ usuario.username }}/" style="font-weight:600; color:#e0e0e0;">{{ usuario.username }}</a>
+    </div>
+    {% endfor %}
+{% elif query %}
+    <div class="card"><p style="color:#444; text-align:center;">No se encontró ningún usuario.</p></div>
+{% endif %}
+
+{% endblock %}

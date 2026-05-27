@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h3 style="margin-bottom:15px; color:#555; font-size:0.85rem; letter-spacing:2px; text-transform:uppercase;">Mensajes</h3>
+
+{% if conversaciones %}
+    {% for usuario in conversaciones %}
+    <a href="/mensajes/{{ usuario.username }}/" style="text-decoration:none;">
+    <div class="card" style="display:flex; align-items:center; gap:12px;">
+        {% if usuario.perfil.foto %}
+            <img src="{{ usuario.perfil.foto.url }}" style="width:50px; height:50px; border-radius:50%; object-fit:cover; border:2px solid #333;">
+        {% else %}
+            <div style="width:50px; height:50px; border-radius:50%; background:#222; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:1.2rem; border:2px solid #333;">
+                {{ usuario.username|first|upper }}
+            </div>
+        {% endif %}
+        <div>
+            <p style="font-weight:600; color:#e0e0e0;">{{ usuario.username }}</p>
+            <small style="color:#444;"><i class="fa-solid fa-message" style="font-size:0.7rem;"></i> Ver conversación</small>
+        </div>
+        <i class="fa-solid fa-chevron-right" style="margin-left:auto; color:#333;"></i>
+    </div>
+    </a>
+    {% endfor %}
+{% else %}
+    <div class="card"><p style="color:#444; text-align:center;">No tienes conversaciones aún.</p></div>
+{% endif %}
+
+{% endblock %}

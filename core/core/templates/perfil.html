@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="card profile-header">
+    {% if perfil.foto %}
+        <img src="{{ perfil.foto.url }}">
+    {% else %}
+        <div class="profile-placeholder">{{ usuario.username|first|upper }}</div>
+    {% endif %}
+    <h2 style="margin-top:12px; font-family:'Cormorant Garamond',serif; font-size:1.8rem; letter-spacing:2px;">{{ usuario.username }}</h2>
+
+    {% if request.user == usuario %}
+    <form method="post" action="/editar-perfil/" enctype="multipart/form-data" style="margin-top:12px;">
+        {% csrf_token %}
+        <label for="foto" style="cursor:pointer; color:#555; font-size:0.9rem; display:inline-flex; align-items:center; gap:6px;">
+            <i class="fa-solid fa-camera"></i>
+            <span id="foto-label">Cambiar foto</span>
+        </label>
+        <input type="file" name="foto" id="foto" accept="image/*" style="display:none;">
+        <button type="submit" style="margin-left:12px;">Guardar</button>
+    </form>
+    {% endif %}
+
+    {% if request.user.is_authenticated and request.user != usuario %}
+    <div style="margin-top:14px; display:flex; gap:10px; justify-content:center;">
+        <a href="/seguir/{{ usuario.username }}/" class="btn {% if ya_sigue %}btn-outline{% endif %}">
+            {% if ya_sigue %}<i class="fa-solid fa-user-minus"></i> Dejar de seguir
+            {% else %}<i class="fa-solid fa-user-plus"></i> Seguir{% endif %}
+        </a>
+        <a href="/mensajes/{{ usuario.username }}/" class="btn btn-outline">
+            <i class="fa-solid fa-message"></i> Mensaje
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<h3 style="margin-bottom:10px; color:#555; font-size:0.85rem; letter-spacing:2px; text-transform:uppercase;">Posts</h3>
+{% for post in posts %}
+<div class="card">
+    {% if post.contenido %}
+        <p style="margin-bottom:8px;">{{ post.contenido }}</p>
+    {% endif %}
+    {% if post.imagen %}
+        <img src="{{ post.imagen.url }}" class="post-img">
+    {% endif %}
+    <small style="color:#444;">{{ post.fecha|date:"d M Y, H:i" }}</small>
+</div>
+{% empty %}
+    <div class="card"><p style="color:#444; text-align:center;">No hay posts aún.</p></div>
+{% endfor %}
+
+<script>
+document.getElementById('foto').addEventListener('change', function() {
+    var label = document.getElementById('foto-label');
+    label.textContent = this.files[0] ? this.files[0].name : 'Cambiar foto';
+});
+</script>
+
+{% endblock %}

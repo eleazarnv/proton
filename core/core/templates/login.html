@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div style="min-height:70vh; display:flex; align-items:center; justify-content:center;">
+<div class="card" style="width:100%; max-width:380px;">
+    <h1 style="font-family:'Cormorant Garamond',serif; font-size:2.5rem; letter-spacing:4px; text-align:center; margin-bottom:6px;">PROTON</h1>
+    <p style="text-align:center; color:#444; font-size:0.85rem; margin-bottom:24px; letter-spacing:1px;">Inicia sesión</p>
+    <form method="post">
+        {% csrf_token %}
+        <input type="text" name="username" placeholder="Usuario">
+        <input type="password" name="password" placeholder="Contraseña">
+        <button type="submit" style="width:100%;">Entrar</button>
+    </form>
+    <p style="text-align:center; margin-top:16px; color:#444; font-size:0.85rem;">
+        ¿No tienes cuenta? <a href="/registro/" style="color:#888;">Regístrate</a>
+    </p>
+</div>
+</div>
+
+{% endblock %}
